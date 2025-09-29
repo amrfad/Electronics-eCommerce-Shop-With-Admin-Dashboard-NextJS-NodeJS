@@ -9,13 +9,14 @@
 // *********************
 
 import React from "react";
-import { MdDashboard } from "react-icons/md";
-import { FaTable } from "react-icons/fa6";
-import { FaRegUser } from "react-icons/fa6";
-import { FaGear } from "react-icons/fa6";
-import { FaBagShopping } from "react-icons/fa6";
-import { MdCategory } from "react-icons/md";
-
+import { MdDashboard, MdCategory } from "react-icons/md";
+import {
+  FaTable,
+  FaRegUser,
+  FaGear,
+  FaBagShopping,
+  FaComments,
+} from "react-icons/fa6";
 
 import Link from "next/link";
 
@@ -50,6 +51,12 @@ const DashboardSidebar = () => {
         <div className="flex gap-x-2 w-full hover:bg-blue-600 cursor-pointer items-center py-6 pl-5 text-xl text-white">
           <FaRegUser className="text-2xl" />{" "}
           <span className="font-normal">Users</span>
+        </div>
+      </Link>
+      <Link href="/admin/feedback">
+        <div className="flex gap-x-2 w-full hover:bg-blue-600 cursor-pointer items-center py-6 pl-5 text-xl text-white">
+          <FaComments className="text-2xl" />{" "}
+          <span className="font-normal">Feedback</span>
         </div>
       </Link>
       <Link href="/admin/settings">

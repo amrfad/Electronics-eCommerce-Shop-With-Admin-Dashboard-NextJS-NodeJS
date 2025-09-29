@@ -27,6 +27,7 @@ model Product {
   category       Category                 @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   customerOrders customer_order_product[]
   Wishlist       Wishlist[]
+  feedbacks      Feedback[]
 }
 
 model Image {
@@ -36,11 +37,12 @@ model Image {
 }
 
 model User {
-  id       String     @id @default(uuid())
-  email    String     @unique
-  password String?
-  role     String?    @default("user")
-  Wishlist Wishlist[]
+  id        String     @id @default(uuid())
+  email     String     @unique
+  password  String?
+  role      String?    @default("user")
+  Wishlist  Wishlist[]
+  feedbacks Feedback[]
 }
 
 model Customer_order {
@@ -83,4 +85,18 @@ model Wishlist {
   productId String
   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
+}
+
+model Feedback {
+  id        String   @id @default(uuid())
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  comment   String
+  rating    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([productId, userId]) // Satu user hanya bisa beri satu feedback per produk
 }
