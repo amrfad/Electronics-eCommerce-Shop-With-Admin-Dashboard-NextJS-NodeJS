@@ -9,7 +9,7 @@ interface FeedbackParams {
   };
 }
 
-// PUT - Update feedback
+// PUT - Update feedback (hanya customer/owner)
 export async function PUT(request: NextRequest, { params }: FeedbackParams) {
   try {
     const session = await getServerSession(authOptions);
@@ -19,6 +19,22 @@ export async function PUT(request: NextRequest, { params }: FeedbackParams) {
       return NextResponse.json(
         { error: "Authentication required" },
         { status: 401 }
+      );
+    }
+
+    // Admin tidak boleh mengedit feedback
+    if ((session as any)?.user?.role === "admin") {
+      return NextResponse.json(
+        { error: "Admin tidak boleh mengedit feedback" },
+        { status: 403 }
+      );
+    }
+
+    // Hanya customer/user yang bisa edit
+    if ((session as any)?.user?.role !== "user") {
+      return NextResponse.json(
+        { error: "Only customers can edit feedback" },
+        { status: 403 }
       );
     }
 
@@ -52,11 +68,8 @@ export async function PUT(request: NextRequest, { params }: FeedbackParams) {
       );
     }
 
-    // Cek authorization: hanya owner feedback atau admin yang bisa update
-    const isOwner = existingFeedback.userId === (session as any).user?.id;
-    const isAdmin = (session as any)?.user?.role === "admin";
-
-    if (!isOwner && !isAdmin) {
+    // Cek ownership - hanya boleh update feedback sendiri
+    if (existingFeedback.userId !== (session as any).user?.id) {
       return NextResponse.json(
         { error: "You can only update your own feedback" },
         { status: 403 }
@@ -95,9 +108,7 @@ export async function PUT(request: NextRequest, { params }: FeedbackParams) {
       { status: 500 }
     );
   }
-}
-
-// DELETE - Hapus feedback
+} // DELETE - Hapus feedback
 export async function DELETE(request: NextRequest, { params }: FeedbackParams) {
   try {
     const session = await getServerSession(authOptions);
@@ -107,6 +118,22 @@ export async function DELETE(request: NextRequest, { params }: FeedbackParams) {
       return NextResponse.json(
         { error: "Authentication required" },
         { status: 401 }
+      );
+    }
+
+    // Admin tidak boleh menghapus feedback
+    if ((session as any)?.user?.role === "admin") {
+      return NextResponse.json(
+        { error: "Admin tidak boleh menghapus feedback" },
+        { status: 403 }
+      );
+    }
+
+    // Hanya customer/user yang bisa delete
+    if ((session as any)?.user?.role !== "user") {
+      return NextResponse.json(
+        { error: "Only customers can delete feedback" },
+        { status: 403 }
       );
     }
 
@@ -122,11 +149,8 @@ export async function DELETE(request: NextRequest, { params }: FeedbackParams) {
       );
     }
 
-    // Cek authorization: hanya owner feedback atau admin yang bisa hapus
-    const isOwner = existingFeedback.userId === (session as any).user?.id;
-    const isAdmin = (session as any)?.user?.role === "admin";
-
-    if (!isOwner && !isAdmin) {
+    // Cek ownership - hanya boleh hapus feedback sendiri
+    if (existingFeedback.userId !== (session as any).user?.id) {
       return NextResponse.json(
         { error: "You can only delete your own feedback" },
         { status: 403 }

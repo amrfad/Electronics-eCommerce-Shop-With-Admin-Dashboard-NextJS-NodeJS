@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST - Buat feedback baru
+// POST - Buat feedback baru (hanya customer/user)
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -80,6 +80,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: "Authentication required" },
         { status: 401 }
+      );
+    }
+
+    // Cek role - hanya user/customer yang bisa membuat feedback
+    if ((session as any)?.user?.role !== "user") {
+      return NextResponse.json(
+        { error: "Only customers can create feedback" },
+        { status: 403 }
       );
     }
 
